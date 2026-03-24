@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>京王自動車 シフトカレンダー - 11班</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+header {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+header h1 {
+  font-size: 1.4em;
+  color: #e0e0e0;
+  font-weight: 600;
+}
+header .subtitle {
+  font-size: 0.85em;
+  color: #888;
+  margin-top: 4px;
+}
+.nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 0;
+}
+.nav button {
+  background: #16213e;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: all 0.2s;
+}
+.nav button:hover { background: #0f3460; border-color: #555; }
+.nav button:active { transform: scale(0.95); }
+.nav .month-label {
+  font-size: 1.5em;
+  font-weight: 700;
+  min-width: 200px;
+  text-align: center;
+  color: #fff;
+}
+.nav .today-btn {
+  font-size: 0.85em;
+  padding: 6px 14px;
+  background: #0f3460;
+  border-color: #4a90d9;
+  color: #4a90d9;
+}
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-top: 5px;
+}
+.day-header {
+  text-align: center;
+  padding: 8px 4px;
+  font-weight: 600;
+  font-size: 0.85em;
+  color: #aaa;
+}
+.day-header.sun { color: #e74c3c; }
+.day-header.sat { color: #3498db; }
+.day-cell {
+  background: #16213e;
+  border-radius: 8px;
+  padding: 6px;
+  min-height: 80px;
+  position: relative;
+  transition: all 0.2s;
+}
+.day-cell:hover { background: #1a2744; }
+.day-cell.other-month { opacity: 0.3; }
+.day-cell.today { border: 2px solid #f39c12; }
+.day-num {
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.day-cell.sun .day-num { color: #e74c3c; }
+.day-cell.sat .day-num { color: #3498db; }
+.shift-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 0.75em;
+  font-weight: 600;
+  margin-top: 2px;
+  width: 100%;
+  text-align: center;
+}
+.shift-demban { background: #1e6f30; color: #a8e6a0; }
+.shift-meikyu { background: #2c5282; color: #90cdf4; }
+.shift-kyukyu { background: #7b341e; color: #fbd38d; }
+.shift-time {
+  font-size: 0.65em;
+  color: #aaa;
+  margin-top: 2px;
+  text-align: center;
+}
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 15px 0;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8em;
+}
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+.stats {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.85em;
+  color: #aaa;
+}
+.stats span { margin: 0 10px; }
+.stats .num { color: #fff; font-weight: 600; }
+.holiday-name {
+  font-size: 0.6em;
+  color: #e74c3c;
+  text-align: center;
+  margin-top: 1px;
+  line-height: 1.2;
+}
+@media (max-width: 600px) {
+  .container { padding: 10px; }
+  .nav .month-label { font-size: 1.2em; min-width: 150px; }
+  .day-cell { min-height: 65px; padding: 4px; }
+  .shift-badge { font-size: 0.65em; padding: 2px 4px; }
+  .day-num { font-size: 0.75em; }
+  header h1 { font-size: 1.1em; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>京王自動車 シフトカレンダー</h1>
+    <div class="subtitle">11班 ・ 隔日勤務</div>
+  </header>
+  <div class="nav">
+    <button onclick="changeMonth(-12)" title="前年">◀◀</button>
+    <button onclick="changeMonth(-1)" title="前月">◀</button>
+    <button class="today-btn" onclick="goToday()">今日</button>
+    <div class="month-label" id="monthLabel"></div>
+    <button onclick="changeMonth(1)" title="翌月">▶</button>
+    <button onclick="changeMonth(12)" title="翌年">▶▶</button>
+  </div>
+  <div class="salary-info" id="salaryInfo"></div>
+  <div class="calendar" id="calendar">
+    <div class="day-header sun">日</div>
+    <div class="day-header">月</div>
+    <div class="day-header">火</div>
+    <div class="day-header">水</div>
+    <div class="day-header">木</div>
+    <div class="day-header">金</div>
+    <div class="day-header sat">土</div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#1e6f30"></div>出番</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2c5282"></div>明休</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7b341e"></div>公休</div>
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+<script>
+const BASE_DATE = new Date(2026, 5, 3);
+const BASE_CYCLE_POS = 0;
+const BASE_NEXT_DEMBAN = 8;
+const BASE_CURRENT_DEMBAN = 7;
+const PATTERN = ['demban','meikyu','demban','meikyu','demban','meikyu','kyukyu','demban','meikyu','demban','meikyu','kyukyu'];
+const SALARY_RESETS = [[1,15],[2,14],[3,16],[4,16],[5,16],[6,16],[7,16],[8,16],[9,16],[10,16],[11,15],[12,15]];
+
+function getHoliday(y,m,d){const key=`${m+1}-${d}`;const fixed={'1-1':'元日','2-11':'建国記念の日','2-23':'天皇誕生日','4-29':'昭和の日','5-3':'憲法記念日','5-4':'みどりの日','5-5':'こどもの日','8-11':'山の日','11-3':'文化の日','11-23':'勤労感謝の日'};if(fixed[key])return fixed[key];if(m===2&&d===20)return'春分の日';if(m===8&&d===23)return'秋分の日';const dow=new Date(y,m,d).getDay();if(m===0&&dow===1){if(d===getNthMonday(y,0,2))return'成人の日';}if(m===6&&dow===1){if(d===getNthMonday(y,6,3))return'海の日';}if(m===9&&dow===1){if(d===getNthMonday(y,9,2))return'スポーツの日';}if(m===8&&dow===1){if(d===getNthMonday(y,8,3))return'敬老の日';}return null;}
+function getNthMonday(year,month,n){let count=0;for(let d=1;d<=31;d++){const dt=new Date(year,month,d);if(dt.getMonth()!==month)break;if(dt.getDay()===1){count++;if(count===n)return d;}}return-1;}
+
+function getMonthShifts(year,month){
+  const firstDay=new Date(year,month,1);
+  const traceStart=new Date(firstDay);traceStart.setDate(traceStart.getDate()-35);
+  const diffToTraceStart=Math.round((traceStart-BASE_DATE)/(1000*60*60*24));
+  let pos,nextDemban,currentDemban,pendingReset;
+  if(diffToTraceStart>=0){
+    let cur=new Date(BASE_DATE);pos=BASE_CYCLE_POS;nextDemban=BASE_NEXT_DEMBAN;currentDemban=BASE_CURRENT_DEMBAN;pendingReset=false;
+    for(let i=0;i<diffToTraceStart;i++){
+      const dt=PATTERN[pos];
+      if(dt==='demban'){if(pendingReset){nextDemban=1;pendingReset=false;}currentDemban=nextDemban;nextDemban=currentDemban+1;}
+      const nextD=new Date(cur);nextD.setDate(nextD.getDate()+1);
+      for(const[rm,rd]of SALARY_RESETS){for(const yr of[cur.getFullYear(),cur.getFullYear()+1]){try{const reset=new Date(yr,rm-1,rd);if(cur<reset&&reset<=nextD)pendingReset=true;}catch(e){}}}
+      cur.setDate(cur.getDate()+1);pos=(pos+1)%12;
+    }
+  }else{
+    const yearsBack=Math.ceil(Math.abs(diffToTraceStart)/365)+1;
+    const earlyDate=new Date(BASE_DATE);earlyDate.setFullYear(earlyDate.getFullYear()-yearsBack);
+    const earlyDiff=Math.round((earlyDate-BASE_DATE)/(1000*60*60*24));
+    pos=((BASE_CYCLE_POS+earlyDiff)%12+12)%12;nextDemban=1;currentDemban=0;pendingReset=false;
+    let cur=new Date(earlyDate);const totalTrace=Math.round((traceStart-earlyDate)/(1000*60*60*24));
+    for(let i=0;i<totalTrace;i++){
+      const dt=PATTERN[pos];
+      if(dt==='demban'){if(pendingReset){nextDemban=1;pendingReset=false;}currentDemban=nextDemban;nextDemban=currentDemban+1;}
+      const nextD=new Date(cur);nextD.setDate(nextD.getDate()+1);
+      for(const[rm,rd]of SALARY_RESETS){for(const yr of[cur.getFullYear(),cur.getFullYear()+1]){try{const reset=new Date(yr,rm-1,rd);if(cur<reset&&reset<=nextD)pendingReset=true;}catch(e){}}}
+      cur.setDate(cur.getDate()+1);pos=(pos+1)%12;
+    }
+  }
+  const results={};let cur=new Date(traceStart);const endTrace=new Date(year,month+1,7);
+  while(cur<=endTrace){
+    const dt=PATTERN[pos];
+    if(dt==='demban'){if(pendingReset){nextDemban=1;pendingReset=false;}currentDemban=nextDemban;nextDemban=currentDemban+1;}
+    const key=`${cur.getFullYear()}-${cur.getMonth()}-${cur.getDate()}`;
+    results[key]={type:dt,num:currentDemban};
+    const nextD=new Date(cur);nextD.setDate(nextD.getDate()+1);
+    for(const[rm,rd]of SALARY_RESETS){for(const yr of[cur.getFullYear(),cur.getFullYear()+1]){try{const reset=new Date(yr,rm-1,rd);if(cur<reset&&reset<=nextD)pendingReset=true;}catch(e){}}}
+    cur.setDate(cur.getDate()+1);pos=(pos+1)%12;
+  }
+  return results;
+}
+
+let currentYear,currentMonth;
+function renderCalendar(year,month){
+  currentYear=year;currentMonth=month;
+  const monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('monthLabel').textContent=`${year}年 ${monthNames[month]}`;
+  document.getElementById('salaryInfo').textContent='';
+  const firstDayOfMonth=new Date(year,month,1);const lastDayOfMonth=new Date(year,month+1,0);
+  const startDow=firstDayOfMonth.getDay();const daysInMonth=lastDayOfMonth.getDate();
+  const today=new Date();today.setHours(0,0,0,0);
+  const shifts=getMonthShifts(year,month);
+  const calEl=document.getElementById('calendar');
+  calEl.querySelectorAll('.day-cell').forEach(c=>c.remove());
+  let dembanCount=0,meikyuCount=0,kyukyuCount=0;
+  const prevMonth=new Date(year,month,0);
+  for(let i=startDow-1;i>=0;i--){const d=prevMonth.getDate()-i;const dt=new Date(year,month-1,d);const key=`${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}`;const shift=shifts[key]||{type:'unknown',num:0};calEl.appendChild(createDayCell(dt,d,shift,true,today));}
+  for(let d=1;d<=daysInMonth;d++){const dt=new Date(year,month,d);const key=`${year}-${month}-${d}`;const shift=shifts[key]||{type:'unknown',num:0};calEl.appendChild(createDayCell(dt,d,shift,false,today));if(shift.type==='demban')dembanCount++;else if(shift.type==='meikyu')meikyuCount++;else if(shift.type==='kyukyu')kyukyuCount++;}
+  const totalCells=startDow+daysInMonth;const remaining=(7-(totalCells%7))%7;
+  for(let d=1;d<=remaining;d++){const dt=new Date(year,month+1,d);const key=`${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}`;const shift=shifts[key]||{type:'unknown',num:0};calEl.appendChild(createDayCell(dt,d,shift,true,today));}
+  document.getElementById('stats').innerHTML=`出番 <span class="num">${dembanCount}</span>回<span>明休 <span class="num">${meikyuCount}</span>日</span><span>公休 <span class="num">${kyukyuCount}</span>日</span>`;
+}
+function createDayCell(date,dayNum,shift,isOtherMonth,today){
+  const cell=document.createElement('div');cell.className='day-cell';
+  if(isOtherMonth)cell.classList.add('other-month');
+  const dow=date.getDay();if(dow===0)cell.classList.add('sun');if(dow===6)cell.classList.add('sat');
+  if(date.getTime()===today.getTime())cell.classList.add('today');
+  const numEl=document.createElement('div');numEl.className='day-num';numEl.textContent=dayNum;cell.appendChild(numEl);
+  const holiday=getHoliday(date.getFullYear(),date.getMonth(),dayNum);
+  if(holiday&&!isOtherMonth){const holEl=document.createElement('div');holEl.className='holiday-name';holEl.textContent=holiday;cell.appendChild(holEl);}
+  const badge=document.createElement('div');badge.className='shift-badge';
+  if(shift.type==='demban'){badge.classList.add('shift-demban');badge.textContent=`出番${shift.num}`;cell.appendChild(badge);const timeEl=document.createElement('div');timeEl.className='shift-time';timeEl.textContent='08:00〜翌05:00';cell.appendChild(timeEl);}
+  else if(shift.type==='meikyu'){badge.classList.add('shift-meikyu');badge.textContent=`明休${shift.num}`;cell.appendChild(badge);}
+  else if(shift.type==='kyukyu'){badge.classList.add('shift-kyukyu');badge.textContent='公休';cell.appendChild(badge);}
+  return cell;
+}
+function changeMonth(delta){let m=currentMonth+delta;let y=currentYear;while(m<0){m+=12;y--;}while(m>11){m-=12;y++;}renderCalendar(y,m);}
+function goToday(){const now=new Date();renderCalendar(now.getFullYear(),now.getMonth());}
+const now=new Date();renderCalendar(now.getFullYear(),now.getMonth());
+</script>
+</body>
+</html>
