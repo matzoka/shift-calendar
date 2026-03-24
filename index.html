@@ -169,7 +169,7 @@ function goToday(){const now=new Date();renderCalendar(now.getFullYear(),now.get
 const now=new Date();renderCalendar(now.getFullYear(),now.getMonth());
 if (navigator.share) { document.getElementById('shareBtn').style.display = 'inline-block'; }
 function shareCalendar() {
-  navigator.share({ title: '京王自動車 シフトカレンダー', text: '11班のシフトカレンダーです', url: location.href }).catch(()=>{});
+  navigator.share({ title: '京王自動車 シフトカレンダー', text: '11班のシフトカレンダーです', url: window.location.href }).catch(()=>{});
 }
 function mailCalendar() {
   const subject = encodeURIComponent('京王自動車 シフトカレンダー');
