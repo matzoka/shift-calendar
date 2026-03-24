@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>京王自動車 シフトカレンダー - 11班</title>
+<title>タクシー業務 シフトカレンダー</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -112,7 +112,7 @@ header .subtitle { font-size: 0.85em; margin-top: 4px; }
 <body class="dark">
 <div class="container">
   <header>
-    <h1>京王自動車 シフトカレンダー</h1>
+    <h1>タクシー業務 シフトカレンダー</h1>
     <div class="subtitle">11班 ・ 隔日勤務</div>
     <div class="theme-toggle">
       <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="テーマ切替">☀️</button>
@@ -177,11 +177,11 @@ function goToday(){const now=new Date();renderCalendar(now.getFullYear(),now.get
 const now=new Date();renderCalendar(now.getFullYear(),now.getMonth());
 if (navigator.share) { document.getElementById('shareBtn').style.display = 'inline-block'; }
 function shareCalendar() {
-  navigator.share({ title: '京王自動車 シフトカレンダー', text: '11班のシフトカレンダーです', url: window.location.href }).catch(()=>{});
+  navigator.share({ title: 'タクシー業務 シフトカレンダー', text: 'シフトカレンダーです', url: window.location.href }).catch(()=>{});
 }
 function mailCalendar() {
-  const subject = encodeURIComponent('京王自動車 シフトカレンダー');
-  const body = encodeURIComponent('11班のシフトカレンダーです\n' + location.href);
+  const subject = encodeURIComponent('タクシー業務 シフトカレンダー');
+  const body = encodeURIComponent('シフトカレンダーです\n' + location.href);
   location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 </script>
