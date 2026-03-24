@@ -103,6 +103,11 @@ header .subtitle { font-size: 0.85em; margin-top: 4px; }
   .theme-btn { padding: 6px 10px; font-size: 0.95em; }
 }
 </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="シフトカレンダー">
 </head>
 <body class="dark">
 <div class="container">
@@ -143,6 +148,9 @@ header .subtitle { font-size: 0.85em; margin-top: 4px; }
   </div>
 </div>
 <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+}
 let isDark = true;
 function toggleTheme() {
   isDark = !isDark;
