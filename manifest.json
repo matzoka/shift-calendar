@@ -1,7 +1,7 @@
 {
   "name": "タクシー業務 シフトカレンダー",
   "short_name": "シフトカレンダー",
-  "description": "隔日勤務シフトカレンダー",
+  "description": "11班 隔日勤務シフトカレンダー",
   "start_url": "/shift-calendar/",
   "display": "standalone",
   "background_color": "#1a1a2e",
